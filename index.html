@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackice Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Blackice Lab</a>
+            <div class="nav-links">
+                <a href="#research">Research</a>
+                <a href="https://github.com/neopolita" target="_blank">GitHub</a>
+                <a href="https://huggingface.co/neopolita" target="_blank">HuggingFace</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-image-wrapper">
+                <img src="imgs/header.png" alt="Blackice Lab" class="hero-image">
+            </div>
+            <h1>Blackice Lab</h1>
+            <p class="tagline">Independent AI Research</p>
+            <p class="description">
+                We research diffusion language models, world models, transfer learning,
+                and model optimization &mdash; building from scratch at accessible scale.
+            </p>
+            <div class="research-areas">
+                <span class="area-tag">Diffusion Language Models</span>
+                <span class="area-tag">World Models</span>
+                <span class="area-tag">Transfer Learning</span>
+                <span class="area-tag">Optimization &amp; Distillation</span>
+            </div>
+        </section>
+
+        <section id="research" class="section">
+            <h2>Research</h2>
+
+            <div class="project-card">
+                <h3>Blackice DLM</h3>
+                <p class="project-meta">390M parameters &middot; Masked Discrete Diffusion</p>
+                <video src="imgs/dlm.mp4" autoplay loop muted playsinline class="card-image"></video>
+                <p>
+                    A diffusion language model trained from scratch on a MacBook Pro M4 Max and cloud GPUs.
+                    The model uses absorbing-state discrete diffusion with a cosine noise schedule,
+                    bidirectional attention, and iterative denoising for text generation.
+                </p>
+                <h4>Architecture</h4>
+                <ul>
+                    <li>28 transformer layers, 1024 hidden dim, 16 attention heads, SwiGLU FFN</li>
+                    <li>Block Attention Residuals &mdash; learned depth-wise aggregation at block boundaries</li>
+                    <li>U-Net mirrored skip connections between encoder and decoder halves</li>
+                    <li>Looped middle blocks for extra compute depth without additional parameters</li>
+                    <li>Gated attention, RoPE, self-conditioning, EMA</li>
+                </ul>
+                <h4>Training</h4>
+                <ul>
+                    <li>Trained on FineWeb-Edu-Dedup with cosine LR decay and adaptive time warping</li>
+                    <li>Progressive context length: 256 &rarr; 512 &rarr; 1024 &rarr; 2048</li>
+                    <li>Best ELBO perplexity: <strong>24.87</strong> at seq_len 2048</li>
+                    <li>Winogrande accuracy: <strong>54.22%</strong> (via cross-architecture weight merging with Qwen2.5-0.5B)</li>
+                </ul>
+                <h4>Techniques Explored</h4>
+                <ul>
+                    <li>LoRA/DoRA fine-tuning, SFT, GRPO reinforcement learning</li>
+                    <li>Coupled-GRPO with antithetic variates for variance reduction</li>
+                    <li>Doc-to-LoRA hypernetwork for document-conditioned adapters</li>
+                    <li>Cross-architecture weight merging (Procrustes alignment + SLERP)</li>
+                    <li>MLX inference port for fast Apple Silicon sampling</li>
+                    <li>Mixed-data continual pretraining (FineWeb + Cosmopedia)</li>
+                </ul>
+                <div class="project-links">
+                    <a href="https://huggingface.co/neopolita" class="btn">Models on HuggingFace</a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h3>Blackice Zeus</h3>
+                <p class="project-meta">19.4M parameters &middot; World Model</p>
+                <video src="imgs/zeus.mp4" autoplay loop muted playsinline class="card-image"></video>
+                <p>
+                    A world model that learns to simulate Atari environments from pixels alone,
+                    discovering latent actions without any action labels. Built in two stages:
+                    a DreamerV3-style model-based RL agent (Stage A) and a Genie-inspired
+                    latent action model (Stage B) that discovers controllable actions from
+                    unlabeled video.
+                </p>
+                <h4>Key Results</h4>
+                <ul>
+                    <li><strong>Playable dream with all game elements</strong> &mdash; paddle responds to keyboard, ball visible, bricks break on collision</li>
+                    <li>Latent action discovery validated on Breakout and Pong &mdash; shuffling actions makes prediction <strong>9.8x worse</strong></li>
+                    <li>Spatial tokens (8&times;8 grid) outperform flat latents with half the dimensions (512 vs 1024)</li>
+                    <li>Single-step action-sensitive prediction achieved on spatial tokens (impossible on flat latents)</li>
+                    <li>Trained entirely on a MacBook Pro M4 Max</li>
+                </ul>
+                <h4>Architecture</h4>
+                <ul>
+                    <li>Categorical VAE encoder/decoder with motion-aware loss weighting</li>
+                    <li>4&times;4 and 8&times;8 spatial token grids (16&ndash;64 tokens per frame)</li>
+                    <li>Causal transformer dynamics with KV-cache for imagination rollouts</li>
+                    <li>VQ-VAE latent action model with direct endpoint prediction (k=4)</li>
+                    <li>Learned state-conditioned action mapper for dream-time control</li>
+                    <li>Scheduled sampling (90%) for closed-loop robustness</li>
+                </ul>
+            </div>
+
+            <div class="project-card">
+                <h3>Transfer Learning &amp; Model Merging</h3>
+                <p class="project-meta">Active &middot; Paper in progress</p>
+                <div class="card-image-pair">
+                    <img src="imgs/tl0.jpeg" alt="Transfer Learning">
+                    <img src="imgs/tl1.jpeg" alt="Model Merging">
+                </div>
+                <p>
+                    Research on heterogeneous model merging and cross-architecture knowledge transfer.
+                    Techniques span from merging instruction-tuned LLMs across model families
+                    to transferring knowledge between fundamentally different architectures
+                    (autoregressive &rarr; diffusion).
+                </p>
+                <h4>Neo Collection</h4>
+                <p>
+                    A collection of LLM merges using novel heterogeneous merging techniques,
+                    combining models across different families and architectures.
+                </p>
+                <ul>
+                    <li><strong>Neo-Falcon3-7B-Instruct</strong> &mdash; merge of Falcon3-7B + Qwen2.5-7B, reached <strong>#1 on HF Open LLM Leaderboard</strong> (&lt;7B category)</li>
+                    <li><strong>Neo-Gemma-3-12B-Instruct</strong> &mdash; heterogeneous merge of Gemma-3-12B</li>
+                    <li><strong>Neo-Mistral-8B / 3B-Instruct</strong> &mdash; merges of Ministral instruction models</li>
+                    <li><strong>Neo-Qwen-4B-Instruct</strong> &mdash; merge of Qwen3-4B</li>
+                </ul>
+                <h4>Cross-Architecture Transfer (AR &rarr; DLM)</h4>
+                <ul>
+                    <li>Procrustes-aligned weight merging (SVD rotation + per-row SLERP) from Qwen2.5-0.5B into a 390M diffusion LM</li>
+                    <li><strong>54.22% Winogrande</strong> accuracy &mdash; closing in on native AR models at the same scale</li>
+                    <li>FFN layers transfer across attention architectures (bidirectional DLM &harr; causal AR)</li>
+                </ul>
+                <div class="project-links">
+                    <a href="https://huggingface.co/collections/neopolita/neo" class="btn">Neo Collection</a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h3>Sia</h3>
+                <p class="project-meta">LLM Optimization, Distillation &amp; Pruning</p>
+                <p>
+                    A unified toolkit for making language models smaller and faster,
+                    implemented entirely in MLX for native Apple Silicon execution.
+                    16 pruning methods and 7 distillation methods spanning
+                    dense models, MoE architectures, and structured compression.
+                </p>
+                <h4>Pruning (16 methods)</h4>
+                <ul>
+                    <li><strong>Layer pruning</strong>: ShortGPT (block influence), E3-PRUNER (KL divergence)</li>
+                    <li><strong>Structured pruning</strong>: FLAP, Bonsai, LoRAPrune, NIRVANA, HFPrune, DDP (differentiable mask search)</li>
+                    <li><strong>Hidden dimension</strong>: SliceGPT (PCA-based width reduction)</li>
+                    <li><strong>MoE-specific</strong>: REAP (expert removal), MergeMoE (expert merging), SlimMoE (width reduction), EvoESAP (evolutionary search), LightMoE</li>
+                    <li><strong>Other</strong>: Minitron (depth+width+attention), SuperPCA, SuperREAP</li>
+                </ul>
+                <h4>Distillation (7 methods)</h4>
+                <ul>
+                    <li><strong>TAID</strong> (ICLR 2025) &mdash; token-adaptive interpolated distillation, SOTA with only 1.1x overhead</li>
+                    <li><strong>GKD</strong> &mdash; on-policy generalized KD, student generates + teacher scores</li>
+                    <li><strong>DSKD</strong> &mdash; dual-space knowledge distillation</li>
+                    <li><strong>DistiLLM 2</strong> &mdash; skew KL + adaptive off-policy</li>
+                    <li><strong>GRAIL</strong> &mdash; gradient-aligned distillation</li>
+                    <li><strong>Free Lunch KD</strong> &mdash; zero-cost logit matching</li>
+                    <li><strong>Logit KD</strong> &mdash; standard KL divergence baseline (Minitron-style)</li>
+                </ul>
+            </div>
+
+            <div class="project-card">
+                <h3>Temis</h3>
+                <p class="project-meta">8 models &middot; Spanish Legal Domain &middot; Open Source</p>
+                <div class="card-image-crop-top">
+                    <img src="imgs/temis.jpeg" alt="Temis - Spanish Legal LLMs">
+                </div>
+                <p>
+                    A collection of language models fine-tuned on 357K articles from the
+                    Spanish Official State Gazette (BOE), specializing in legal and
+                    administrative language. Named after Themis, the goddess of justice.
+                </p>
+                <h4>Models</h4>
+                <ul>
+                    <li>Gemma 2B &amp; 7B, Llama 3.2-1B &amp; 3-8B, Mistral 7B-v0.3</li>
+                    <li>Qwen 2.5-0.5B &amp; 1.5B, SmolLM-360M</li>
+                    <li>8 models spanning 360M to 8B parameters, all trained on BOE legal corpus</li>
+                </ul>
+                <div class="project-links">
+                    <a href="https://huggingface.co/collections/neopolita/temis" class="btn">Temis Collection</a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h3>Thoth &amp; mlx-D2L</h3>
+                <p class="project-meta">Mistral AI Hackathon &middot; Doc-to-LoRA &middot; MLX</p>
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube-nocookie.com/embed/dJu83BH-hQw" title="Thoth Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <p>
+                    Compresses document knowledge directly into model weights instead of
+                    consuming context window tokens. Ported Sakana AI's Doc-to-LoRA technology
+                    to Mistral's Ministral-3B and reimplemented the full inference pipeline
+                    in MLX for native Apple Silicon support.
+                </p>
+                <h4>Key Results</h4>
+                <ul>
+                    <li>Hypernetwork trained from scratch on Ministral-3B &mdash; 0.744 loss over 4K steps on synthetic QA pairs</li>
+                    <li>Thoth agent: DSPy-based reasoning system that converts documents into LoRA adapters on-the-fly</li>
+                    <li>Knowledge-in-weights approach keeps context window free for reasoning, replacing traditional RAG</li>
+                    <li>Full MLX inference pipeline &mdash; no CUDA required</li>
+                </ul>
+                <div class="project-links">
+                    <a href="https://neopolita.github.io/mistral-ai-wh-2026/" class="btn">Project Page</a>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h3>TinyLoRA</h3>
+                <p class="project-meta">MLX Implementation &middot; <a href="https://arxiv.org/abs/2602.04118">arXiv 2602.04118</a></p>
+                <img src="imgs/poker.jpeg" alt="Texas Hold'em poker strategy" class="card-image">
+                <p>
+                    MLX implementation of <a href="https://arxiv.org/abs/2602.04118">TinyLoRA</a>
+                    (&ldquo;Learning to Reason in 13 Parameters&rdquo;), a parameter-efficient
+                    fine-tuning method that achieves strong task performance with extremely small adapters.
+                    Validated on Texas Hold'em poker strategy with Llama 3.2-1B.
+                </p>
+                <h4>Key Results</h4>
+                <ul>
+                    <li><strong>Standard fine-tuning</strong> (LoRA + unsloth-mlx on PokerBench): preflop 7%&rarr;<strong>83%</strong>, postflop 13%&rarr;<strong>55%</strong></li>
+                    <li><strong><a href="https://arxiv.org/abs/2602.04118">TinyLoRA</a></strong> (arXiv 2602.04118): preflop 7%&rarr;<strong>36%</strong>, postflop 13%&rarr;<strong>60%</strong> with a <strong>470KB</strong> adapter</li>
+                    <li>TinyLoRA achieves comparable postflop accuracy to full LoRA with orders of magnitude fewer parameters</li>
+                </ul>
+                <div class="project-links">
+                    <a href="https://huggingface.co/neopolita/TexasHoldEm-Llama-3.2-1B-Instruct" class="btn">LoRA Model</a>
+                    <a href="https://huggingface.co/neopolita/TinyLoRA-TexasHoldEm-Llama-3.2-1B-Instruct" class="btn">TinyLoRA Model</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer></footer>
+</body>
+</html>
